@@ -5,15 +5,14 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -26,18 +25,15 @@ class DirectoryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DirectoryEntryAdapter
 
-    private lateinit var viewModel: DirectoryFragmentViewModel
+    private val viewModel: DirectoryFragmentViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?,
     ): View? {
         directoryUri = arguments?.getString(ARG_DIRECTORY_URI)?.toUri()
-            ?: throw IllegalArgumentException("Must pass URI of directory to open")
-
-        viewModel = ViewModelProviders.of(this)
-            .get(DirectoryFragmentViewModel::class.java)
+                ?: throw IllegalArgumentException("Must pass URI of directory to open")
 
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
         recyclerView = view.findViewById(R.id.list)
@@ -76,7 +72,6 @@ class DirectoryFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         /*
         * DocumentFile.fromTreeUri(activity.applicationContext,directoryUri).findFile("internal").listFiles()
         * */
@@ -92,9 +87,9 @@ class DirectoryFragment : Fragment() {
             startActivity(openIntent)
         } catch (ex: ActivityNotFoundException) {
             Toast.makeText(
-                requireContext(),
-                "No app found to open this file ${document.name}",
-                Toast.LENGTH_SHORT
+                    requireContext(),
+                    "No app found to open this file ${document.name}",
+                    Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -146,11 +141,11 @@ class DirectoryFragment : Fragment() {
          */
         @JvmStatic
         fun newInstance(directoryUri: Uri) =
-            DirectoryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_DIRECTORY_URI, directoryUri.toString())
+                DirectoryFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_DIRECTORY_URI, directoryUri.toString())
+                    }
                 }
-            }
     }
 }
 

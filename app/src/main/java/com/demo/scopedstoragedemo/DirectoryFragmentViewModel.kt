@@ -20,7 +20,7 @@ class DirectoryFragmentViewModel(application: Application) : AndroidViewModel(ap
     private val _openDocument = MutableLiveData<Event<CachingDocumentFile>>()
     val openDocument = _openDocument
 
-    private val executor = Executors.newSingleThreadExecutor();
+    private val executor = Executors.newSingleThreadExecutor()
 
     fun loadDirectory(directoryUri: Uri) {
         val documentsTree = DocumentFile.fromTreeUri(getApplication(), directoryUri) ?: return

@@ -20,8 +20,8 @@ class GrantedURIAdapter(private val clickListeners: ClickListeners) :
         return ViewHolder(view)
     }
 
-    fun CheckedTextView.changeCheckState(checked: Boolean) {
-        isChecked = checked;
+    private fun CheckedTextView.changeCheckState(checked: Boolean) {
+        isChecked = checked
         setCheckMarkDrawable(
             if (isChecked)
                 R.drawable.ic_check_black_24
