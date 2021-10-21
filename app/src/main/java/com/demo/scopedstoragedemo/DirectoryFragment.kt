@@ -15,6 +15,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textview.MaterialTextView
+import com.storagepath.CachingDocumentFile
 
 /**
  * Fragment that shows a list of documents in a directory.
@@ -23,6 +25,8 @@ class DirectoryFragment : Fragment() {
     private lateinit var directoryUri: Uri
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var noDataTv: MaterialTextView
+    private lateinit var currentDirectoryPath: MaterialTextView
     private lateinit var adapter: DirectoryEntryAdapter
 
     private val viewModel: DirectoryFragmentViewModel by viewModels()
@@ -37,6 +41,8 @@ class DirectoryFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
         recyclerView = view.findViewById(R.id.list)
+        noDataTv = view.findViewById(R.id.noDataPlaceholder)
+        currentDirectoryPath = view.findViewById(R.id.currentDirectoryPath)
         recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
 
         adapter = DirectoryEntryAdapter(object : ClickListeners {
@@ -52,16 +58,25 @@ class DirectoryFragment : Fragment() {
         recyclerView.adapter = adapter
 
         viewModel.documents.observe(viewLifecycleOwner, Observer { documents ->
-            documents?.let { adapter.setEntries(documents) }
+            currentDirectoryPath.text = directoryUri.lastPathSegment?.substringAfter(":")
+            if (documents.isNullOrEmpty()) {
+                noDataTv.show()
+                noDataTv.text = noDataTv.tag.toString().format(directoryUri.lastPathSegment?.substringAfter(":"))
+                recyclerView.hide()
+                return@Observer
+            }
+            noDataTv.hide()
+            recyclerView.show()
+            documents.let { adapter.setEntries(documents) }
         })
 
-        viewModel.openDirectory.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.openDirectory.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { directory ->
                 (activity as? MainActivity)?.showDirectoryContents(directory.uri)
             }
         })
 
-        viewModel.openDocument.observe(viewLifecycleOwner, Observer { event ->
+        viewModel.openDocument.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { document ->
                 openDocument(document)
             }

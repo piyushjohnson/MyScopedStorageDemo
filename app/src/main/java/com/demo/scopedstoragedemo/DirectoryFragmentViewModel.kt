@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.storagepath.CachingDocumentFile
+import com.storagepath.toCachingList
 import java.util.concurrent.Executors
 
 /**
@@ -22,6 +24,14 @@ class DirectoryFragmentViewModel(application: Application) : AndroidViewModel(ap
 
     private val executor = Executors.newSingleThreadExecutor()
 
+    fun getDirectoryDocumentFile(directoryUri: Uri): CachingDocumentFile? {
+        val documentFile = DocumentFile.fromTreeUri(getApplication(), directoryUri)
+        if (documentFile != null) {
+            return CachingDocumentFile(documentFile)
+        }
+        return null
+    }
+
     fun loadDirectory(directoryUri: Uri) {
         val documentsTree = DocumentFile.fromTreeUri(getApplication(), directoryUri) ?: return
         val childDocuments = documentsTree.listFiles().toCachingList()
@@ -31,9 +41,9 @@ class DirectoryFragmentViewModel(application: Application) : AndroidViewModel(ap
         // some time, so we'll take advantage of coroutines to take this work off the main thread.
         executor.submit(Runnable {
             val sortedDocuments =
-                childDocuments.toMutableList().apply {
-                    sortBy { it.name }
-                }
+                    childDocuments.toMutableList().apply {
+                        sortBy { it.name }
+                    }
             _documents.postValue(sortedDocuments)
         })
     }

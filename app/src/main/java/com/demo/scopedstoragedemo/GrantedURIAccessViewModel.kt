@@ -14,6 +14,8 @@ class GrantedURIAccessViewModel(private val app: Application) : AndroidViewModel
         _persistedUriPermissions.value = app.contentResolver.persistedUriPermissions
     }
 
+    fun arePersistedUrisPermissionPresent() = _persistedUriPermissions.value?.isNotEmpty() ?: false
+
     fun takePersistedUriPermission(uri: Uri, modeFlags: Int) {
         app.contentResolver.takePersistableUriPermission(uri, modeFlags)
         _persistedUriPermissions.value = app.contentResolver.persistedUriPermissions

@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textview.MaterialTextView
 
 
 /**
@@ -21,6 +22,7 @@ class GrantedURIAccessFragment : Fragment() {
     private lateinit var grantedUris: List<UriPermission>
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var noDataTv: MaterialTextView
     private lateinit var adapter: GrantedURIAdapter
 
 
@@ -38,6 +40,7 @@ class GrantedURIAccessFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_granted_uri_access, container, false)
         recyclerView = view.findViewById(R.id.list)
+        noDataTv = view.findViewById(R.id.noDataPlaceholder)
         recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
 
         // Inflate the layout for this fragment
@@ -55,24 +58,31 @@ class GrantedURIAccessFragment : Fragment() {
                 }
 
                 override fun onURILongClicked(clickedUriPermission: UriPermission) {
-                    val modeFlag: Int = if (clickedUriPermission.isReadPermission && !clickedUriPermission.isWritePermission) {
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    } else if (clickedUriPermission.isWritePermission && !clickedUriPermission.isReadPermission) {
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    } else {
-                        0
-                    }
+                    val modeFlag: Int =
+                            if (clickedUriPermission.isReadPermission && !clickedUriPermission.isWritePermission) {
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            } else if (clickedUriPermission.isWritePermission && !clickedUriPermission.isReadPermission) {
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            } else {
+                                0
+                            }
                     viewModel.releasePersistableUriPermission(clickedUriPermission.uri, modeFlag)
                 }
             })
             recyclerView.adapter = adapter
             observePersistedUris(parentActivity)
         }
-//        viewModel.loadDirectory(directoryUri)
     }
 
     private fun observePersistedUris(parentActivity: MainActivity) {
         viewModel.persistedUriPermissions.observe(parentActivity, Observer { uriEntries ->
+            if (uriEntries.isNullOrEmpty()) {
+                noDataTv.show()
+                recyclerView.hide()
+                return@Observer
+            }
+            noDataTv.hide()
+            recyclerView.show()
             adapter.setEntries(uriEntries)
         })
     }
@@ -85,4 +95,5 @@ class GrantedURIAccessFragment : Fragment() {
     }
 }
 
-private const val ARG_DIRECTORY_URI_LIST = "com.example.android.directoryselection.ARG_DIRECTORY_URI"
+private const val ARG_DIRECTORY_URI_LIST =
+        "com.example.android.directoryselection.ARG_DIRECTORY_URI"

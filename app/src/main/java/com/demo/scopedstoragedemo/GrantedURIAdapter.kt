@@ -10,23 +10,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class GrantedURIAdapter(private val clickListeners: ClickListeners) :
-    RecyclerView.Adapter<GrantedURIAdapter.ViewHolder>() {
+        RecyclerView.Adapter<GrantedURIAdapter.ViewHolder>() {
 
     private val uriEntries = mutableListOf<UriPermission>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.granted_uri_item, parent, false)
+                .inflate(R.layout.granted_uri_item, parent, false)
         return ViewHolder(view)
     }
 
     private fun CheckedTextView.changeCheckState(checked: Boolean) {
         isChecked = checked
         setCheckMarkDrawable(
-            if (isChecked)
-                R.drawable.ic_check_black_24
-            else
-                R.drawable.ic_check_gray_24
+                if (isChecked)
+                    R.drawable.ic_check_black_24
+                else
+                    R.drawable.ic_check_gray_24
         )
     }
 
@@ -79,8 +79,8 @@ class GrantedURIAdapter(private val clickListeners: ClickListeners) :
 
     companion object {
         interface ClickListeners {
-            fun onURIClicked(clickedUri: UriPermission)
-            fun onURILongClicked(clickedUri: UriPermission)
+            fun onURIClicked(clickedUriPermission: UriPermission)
+            fun onURILongClicked(clickedUriPermission: UriPermission)
         }
     }
 }

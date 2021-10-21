@@ -6,16 +6,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.storagepath.CachingDocumentFile
 
 class DirectoryEntryAdapter(
-    private val clickListeners: ClickListeners
+        private val clickListeners: ClickListeners,
 ) : RecyclerView.Adapter<DirectoryEntryAdapter.ViewHolder>() {
 
     private val directoryEntries = mutableListOf<CachingDocumentFile>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.directory_item, parent, false)
+                .inflate(R.layout.directory_item, parent, false)
         return ViewHolder(view)
     }
 

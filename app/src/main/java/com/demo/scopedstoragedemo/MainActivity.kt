@@ -28,6 +28,7 @@ private const val OPEN_FILE_REQUEST_CODE = 0xf12e
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: GrantedURIAccessViewModel by viewModels()
+    private val directoryFragmentViewModel: DirectoryFragmentViewModel by viewModels()
     private lateinit var primaryExternalStorage: File
     private lateinit var readFromFileBtn: Button
     private lateinit var saveToFileBtn: Button
@@ -71,11 +72,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         getExternalStorageVolume()
+        if (viewModel.arePersistedUrisPermissionPresent()) {
+            showUriContents()
+        }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
+    override fun onBackPressed() {
+        supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name?.let {
+            if (it.contains("GrantedURIAccessFragment")) {
+                finish()
+            }
+        }
         supportFragmentManager.popBackStack()
-        return false
     }
 
     fun readFromFile(view: View) {
@@ -193,19 +201,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
         supportFragmentManager.beginTransaction().apply {
-            val directoryTag = directoryUri.toString()
+            val directoryTag = directoryUri.hashCode()
             val directoryFragment = DirectoryFragment.newInstance(directoryUri)
-            replace(R.id.fragment_container, directoryFragment, directoryTag)
-            addToBackStack(directoryTag)
+            replace(R.id.fragment_container, directoryFragment, directoryTag.toString())
+            addToBackStack("DirectoryFragment$directoryTag")
         }.commit()
     }
 
     private fun showUriContents(uriPermissions: List<UriPermission> = emptyList()) {
         supportFragmentManager.beginTransaction().apply {
-            val uriTag = uriPermissions.toString()
+            val uriTag = uriPermissions.hashCode()
             val directoryFragment = GrantedURIAccessFragment.newInstance()
-            replace(R.id.fragment_container, directoryFragment, uriTag)
-            addToBackStack(uriTag)
+            replace(R.id.fragment_container, directoryFragment, uriTag.toString())
+            addToBackStack("GrantedURIAccessFragment$uriTag")
         }.commit()
     }
 
@@ -219,7 +227,7 @@ class MainActivity : AppCompatActivity() {
             if (resultData != null) {
                 val directoryUri = resultData.data!!
                 //  Once taken, the permission grant will be remembered across device reboots.
-                viewModel.takePersistedUriPermission(directoryUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                viewModel.takePersistedUriPermission(directoryUri, Intent.FLAG_GRANT_READ_URI_PERMISSION + Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 showDirectoryContents(directoryUri, newlyGranted = true)
             }
         }
