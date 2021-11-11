@@ -41,4 +41,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
 
+    implementation'com.github.akshaaatt:Sliding-Carousel:1.0.1'
+
 }

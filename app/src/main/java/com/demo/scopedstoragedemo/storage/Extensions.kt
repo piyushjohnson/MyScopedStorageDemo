@@ -1,4 +1,4 @@
-package com.demo.scopedstoragedemo
+package com.demo.scopedstoragedemo.storage
 
 import android.view.View
 

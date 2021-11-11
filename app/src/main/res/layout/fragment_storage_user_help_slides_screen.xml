@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".storage.StorageUserHelpSlidesScreen">
+
+    <com.limerse.slider.ImageCarousel
+        android:id="@+id/carousel"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginHorizontal="8dp"
+        app:showTopShadow="false"
+        app:imageScaleType="fitCenter" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_grant_now"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:onClick="requestDirectoryURIAccess"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Grant now"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

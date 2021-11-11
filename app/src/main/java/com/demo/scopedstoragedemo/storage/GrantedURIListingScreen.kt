@@ -1,4 +1,4 @@
-package com.demo.scopedstoragedemo
+package com.demo.scopedstoragedemo.storage
 
 import android.content.Intent
 import android.content.UriPermission
@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.demo.scopedstoragedemo.R
 import com.google.android.material.textview.MaterialTextView
 
 
@@ -18,12 +19,12 @@ import com.google.android.material.textview.MaterialTextView
  * Fragment that shows list of granted URI for app
  */
 class GrantedURIAccessFragment : Fragment() {
-    private val viewModel: GrantedURIAccessViewModel by activityViewModels()
+    private val viewModel: GrantedURIListingViewModel by activityViewModels()
     private lateinit var grantedUris: List<UriPermission>
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var noDataTv: MaterialTextView
-    private lateinit var adapter: GrantedURIAdapter
+    private lateinit var listingAdapter: GrantedURIListingAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +51,8 @@ class GrantedURIAccessFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val parentActivity = activity
-        if (parentActivity is MainActivity) {
-            adapter = GrantedURIAdapter(object : GrantedURIAdapter.Companion.ClickListeners {
+        if (parentActivity is StorageURIPermissionDialogScreen) {
+            listingAdapter = GrantedURIListingAdapter(object : GrantedURIListingAdapter.Companion.ClickListeners {
 
                 override fun onURIClicked(clickedUriPermission: UriPermission) {
                     parentActivity.showDirectoryContents(clickedUriPermission.uri)
@@ -63,18 +64,20 @@ class GrantedURIAccessFragment : Fragment() {
                                 Intent.FLAG_GRANT_READ_URI_PERMISSION
                             } else if (clickedUriPermission.isWritePermission && !clickedUriPermission.isReadPermission) {
                                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            } else if(clickedUriPermission.isReadPermission && clickedUriPermission.isWritePermission) {
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION + Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                             } else {
                                 0
                             }
                     viewModel.releasePersistableUriPermission(clickedUriPermission.uri, modeFlag)
                 }
             })
-            recyclerView.adapter = adapter
+            recyclerView.adapter = listingAdapter
             observePersistedUris(parentActivity)
         }
     }
 
-    private fun observePersistedUris(parentActivity: MainActivity) {
+    private fun observePersistedUris(parentActivity: StorageURIPermissionDialogScreen) {
         viewModel.persistedUriPermissions.observe(parentActivity, Observer { uriEntries ->
             if (uriEntries.isNullOrEmpty()) {
                 noDataTv.show()
@@ -83,7 +86,7 @@ class GrantedURIAccessFragment : Fragment() {
             }
             noDataTv.hide()
             recyclerView.show()
-            adapter.setEntries(uriEntries)
+            listingAdapter.setEntries(uriEntries)
         })
     }
 

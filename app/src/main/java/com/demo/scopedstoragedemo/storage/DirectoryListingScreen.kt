@@ -1,6 +1,7 @@
-package com.demo.scopedstoragedemo
+package com.demo.scopedstoragedemo.storage
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -15,8 +16,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.demo.scopedstoragedemo.R
 import com.google.android.material.textview.MaterialTextView
-import com.storagepath.CachingDocumentFile
 
 /**
  * Fragment that shows a list of documents in a directory.
@@ -29,7 +30,7 @@ class DirectoryFragment : Fragment() {
     private lateinit var currentDirectoryPath: MaterialTextView
     private lateinit var adapter: DirectoryEntryAdapter
 
-    private val viewModel: DirectoryFragmentViewModel by viewModels()
+    private val viewModel: DirectoryListingViewModel by viewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -70,15 +71,19 @@ class DirectoryFragment : Fragment() {
             documents.let { adapter.setEntries(documents) }
         })
 
-        viewModel.openDirectory.observe(viewLifecycleOwner, { event ->
+        viewModel.openTree.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { directory ->
-                (activity as? MainActivity)?.showDirectoryContents(directory.uri)
+                (activity as? StorageURIPermissionDialogScreen)?.showDirectoryContents(directory.uri)
             }
         })
 
         viewModel.openDocument.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let { document ->
-                openDocument(document)
+            event.getContentIfNotHandled()?.let { documentAction ->
+                when(documentAction) {
+                    is DocumentAction.OpenAndViewDirectory -> return@observe
+                    is DocumentAction.OpenAndViewFile -> openDocument(documentAction.documentFile)
+                    is DocumentAction.SelectFileAndReturnUri -> finishWithReturningSelectedDocument(documentAction.documentFile)
+                }
             }
         })
 
@@ -90,8 +95,35 @@ class DirectoryFragment : Fragment() {
         /*
         * DocumentFile.fromTreeUri(activity.applicationContext,directoryUri).findFile("internal").listFiles()
         * */
+        activity?.intent?.let { intent ->
+            val showUriListingOnly = intent.getBooleanExtra(FORCE_SHOW_URI_LISTING, false);
+            if (showUriListingOnly) {
+                intent.action?.let { action ->
+                    viewModel.setDocumentEventAction(
+                        when (DocumentActions.valueOf(action)) {
+                            DocumentActions.OpenAndViewFile -> DocumentAction.OpenAndViewFile()
+                            DocumentActions.OpenAndViewDirectory -> DocumentAction.OpenAndViewDirectory()
+                            DocumentActions.SelectFileAndReturnUri -> DocumentAction.SelectFileAndReturnUri()
+                            DocumentActions.NoAction -> DocumentAction.NoAction
+                            else -> DocumentAction.NoAction
+                        }
+                    )
+                }
+            }
+        }
         viewModel.loadDirectory(directoryUri)
     }
+
+    private fun finishWithReturningSelectedDocument(documentFile: CachingDocumentFile) {
+        val resultIntent = Intent().apply {
+            data = documentFile.uri
+        }
+        activity?.apply {
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
+        }
+    }
+
 
     private fun openDocument(document: CachingDocumentFile) {
         try {

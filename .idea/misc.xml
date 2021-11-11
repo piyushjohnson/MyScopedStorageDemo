@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Piyush/AndroidStudioProjects/MyScopedStorageDemo/app/src/main/res/layout/activity_main.xml" value="0.2028985507246377" />
+        <entry key="..\:/Users/Piyush/AndroidStudioProjects/MyScopedStorageDemo/app/src/main/res/layout/activity_storage_consumer.xml" value="0.2028985507246377" />
+        <entry key="..\:/Users/Piyush/AndroidStudioProjects/MyScopedStorageDemo/app/src/main/res/layout/dialog_storage_uri_permission.xml" value="0.2028985507246377" />
+        <entry key="..\:/Users/Piyush/AndroidStudioProjects/MyScopedStorageDemo/app/src/main/res/layout/fragment_storage_user_help_slides_screen.xml" value="0.22780797101449277" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
 </project>

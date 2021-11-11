@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp"
-    tools:context=".DirectoryFragment">
+    tools:context=".storage.DirectoryFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/noDataPlaceholder"
@@ -32,7 +32,7 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/directory_item" />
+            tools:listitem="@layout/directory_listing_item" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

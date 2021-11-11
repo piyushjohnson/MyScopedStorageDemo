@@ -1,4 +1,4 @@
-package com.demo.scopedstoragedemo
+package com.demo.scopedstoragedemo.storage
 
 import android.content.UriPermission
 import android.view.LayoutInflater
@@ -8,15 +8,16 @@ import android.widget.CheckedTextView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.demo.scopedstoragedemo.R
 
-class GrantedURIAdapter(private val clickListeners: ClickListeners) :
-        RecyclerView.Adapter<GrantedURIAdapter.ViewHolder>() {
+class GrantedURIListingAdapter(private val clickListeners: ClickListeners) :
+        RecyclerView.Adapter<GrantedURIListingAdapter.ViewHolder>() {
 
     private val uriEntries = mutableListOf<UriPermission>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.granted_uri_item, parent, false)
+                .inflate(R.layout.granted_uri_listing_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -46,10 +47,10 @@ class GrantedURIAdapter(private val clickListeners: ClickListeners) :
 
 
 
-            root.setOnClickListener {
+            this.itemView.setOnClickListener {
                 clickListeners.onURIClicked(item)
             }
-            root.setOnLongClickListener {
+            this.itemView.setOnLongClickListener {
                 clickListeners.onURILongClicked(item)
                 true
             }
@@ -70,7 +71,6 @@ class GrantedURIAdapter(private val clickListeners: ClickListeners) :
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val root = view
         val fileName: TextView = view.findViewById(R.id.uri)
         val entryImg: ImageView = view.findViewById(R.id.entry_image)
         val read: CheckedTextView = view.findViewById(R.id.read)
